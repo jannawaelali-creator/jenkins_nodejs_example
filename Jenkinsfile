@@ -37,7 +37,7 @@ pipeline {
         }
 
         stage('deployment ') {
-              agent { label  "aws"}
+              // agent { label  ""}
               
               steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
