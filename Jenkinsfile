@@ -1,9 +1,9 @@
 pipeline {
   agent any
     // This tells Jenkins to run this job specifically on your private EC2 slave
-    // agent { 
-    //     label 'private-ec2' 
-    // }
+    agent { 
+        label 'private-ec2' 
+    }
 
     // This section securely pulls the changing Terraform outputs from Jenkins Credentials
     environment {
@@ -37,7 +37,7 @@ pipeline {
         }
 
         stage('deployment ') {
-              // agent { label  ""}
+          
               
               steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
