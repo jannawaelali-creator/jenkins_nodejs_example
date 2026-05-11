@@ -1,5 +1,4 @@
 pipeline {
-  agent any
     // This tells Jenkins to run this job specifically on your private EC2 slave
     agent { 
         label 'private-ec2' 
