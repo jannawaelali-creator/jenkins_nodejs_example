@@ -1,0 +1,54 @@
+pipeline {
+  agent any
+    // This tells Jenkins to run this job specifically on your private EC2 slave
+    // agent { 
+    //     label 'private-ec2' 
+    // }
+
+    // This section securely pulls the changing Terraform outputs from Jenkins Credentials
+    environment {
+        RDS_HOSTNAME = credentials('rds-url-secret')
+        RDS_USERNAME = credentials('rds-user-secret')
+        RDS_PASSWORD = credentials('rds-pass-secret')
+        REDIS_HOSTNAME = credentials('redis-url-secret')
+    }
+
+    stages {
+        stage('Pull Code') {
+            steps {
+              
+                checkout scm
+            }
+        }
+
+        
+        stage('Build') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh '''
+                docker build . -t jannawael/nodejs_terr:latest
+                docker login -u ${USERNAME} --password ${PASSWORD}
+                docker push jannawael/nodejs_terr:latest
+                
+                '''
+                
+                }
+            }
+        }
+
+        stage('deployment ') {
+              agent { label  "aws"}
+              
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh '''
+                docker login -u ${USERNAME} --password ${PASSWORD}
+                docker run -d -p 3000:3000 -e RDS_HOSTNAME="$RDS_HOSTNAME" -e RDS_USERNAME="$RDS_USERNAME" -e RDS_PASSWORD="$RDS_PASSWORD" -e RDS_PORT="3306" -e REDIS_HOSTNAME="$REDIS_HOSTNAME" -e REDIS_PORT="6379" jannawael/nodejs_terr:latest  
+                
+                '''
+              
+            }
+            }
+        }
+    }
+}
