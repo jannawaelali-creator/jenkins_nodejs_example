@@ -42,7 +42,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 sh '''
                 docker login -u ${USERNAME} --password ${PASSWORD}
-                docker run -d -p 3000:3000 -e RDS_HOSTNAME="$RDS_HOSTNAME" -e RDS_USERNAME="$RDS_USERNAME" -e RDS_PASSWORD="$RDS_PASSWORD" -e RDS_PORT="3306" -e REDIS_HOSTNAME="$REDIS_HOSTNAME" -e REDIS_PORT="6379" jannawael/nodejs_terr:latest  
+                docker run -d -p 80:3000 -e RDS_HOSTNAME="$RDS_HOSTNAME" -e RDS_USERNAME="$RDS_USERNAME" -e RDS_PASSWORD="$RDS_PASSWORD" -e RDS_PORT="3306" -e REDIS_HOSTNAME="$REDIS_HOSTNAME" -e REDIS_PORT="6379" jannawael/nodejs_terr:latest  
                 
                 '''
               
